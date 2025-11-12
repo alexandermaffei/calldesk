@@ -1,10 +1,9 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect } from "react";
 
 import { updateLeadAction } from "@/lib/actions";
 import type { Lead, LeadStatus } from "@/lib/definitions";
@@ -52,7 +51,7 @@ export default function EditLeadForm({ lead }: { lead: Lead }) {
   const { toast } = useToast();
   const initialState = { message: null, errors: {} };
   const updateLeadWithId = updateLeadAction.bind(null, lead.id);
-  const [state, dispatch] = useFormState(updateLeadWithId, initialState);
+  const [state, dispatch] = useActionState(updateLeadWithId, initialState);
 
   const form = useForm<EditLeadFormValues>({
     resolver: zodResolver(EditLeadSchema),
