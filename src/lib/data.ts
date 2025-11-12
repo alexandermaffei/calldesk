@@ -1,94 +1,99 @@
-import type { Lead } from './definitions';
-import { subDays, formatISO } from 'date-fns';
+import type { Lead, LeadStatus } from './definitions';
+import { formatISO } from 'date-fns';
 
-let leads: Lead[] = [
-  {
-    id: 'lead-001',
-    name: 'Mario Rossi',
-    phone: '333 1234567',
-    email: 'mario.rossi@example.com',
-    status: 'Nuovo',
-    vehicleOfInterest: 'Fiat Panda',
-    notes: 'Ha chiamato per informazioni sulla promo attuale. Richiamare nel pomeriggio.',
-    createdAt: formatISO(subDays(new Date(), 1)),
-    agent: 'Luca Bianchi',
-  },
-  {
-    id: 'lead-002',
-    name: 'Giulia Verdi',
-    phone: '347 7654321',
-    email: 'giulia.verdi@example.com',
-    status: 'Contattato',
-    vehicleOfInterest: 'Jeep Renegade',
-    notes: 'Contattata per fissare appuntamento. In attesa di sua conferma.',
-    createdAt: formatISO(subDays(new Date(), 2)),
-    agent: 'Sara Neri',
-  },
-  {
-    id: 'lead-003',
-    name: 'Marco Neri',
-    phone: '329 1122334',
-    email: 'marco.neri@example.com',
-    status: 'In Lavorazione',
-    vehicleOfInterest: 'Alfa Romeo Stelvio',
-    notes: 'Preventivo inviato via email. In attesa di feedback.',
-    createdAt: formatISO(subDays(new Date(), 5)),
-    agent: 'Luca Bianchi',
-  },
-  {
-    id: 'lead-004',
-    name: 'Laura Gialli',
-    phone: '338 5566778',
-    email: 'laura.gialli@example.com',
-    status: 'Chiuso',
-    vehicleOfInterest: 'Lancia Ypsilon',
-    notes: 'Contratto firmato. Cliente soddisfatto.',
-    createdAt: formatISO(subDays(new Date(), 10)),
-    agent: 'Sara Neri',
-  },
-  {
-    id: 'lead-005',
-    name: 'Paolo Marroni',
-    phone: '366 9988776',
-    email: 'paolo.marroni@example.com',
-    status: 'Nuovo',
-    vehicleOfInterest: 'Peugeot 208',
-    notes: 'Interessato a test drive. Richiamare domani mattina.',
-    createdAt: formatISO(new Date()),
-    agent: 'Luca Bianchi',
-  },
-  {
-    id: 'lead-006',
-    name: 'Francesca Blu',
-    phone: '339 1231231',
-    email: 'francesca.blu@example.com',
-    status: 'Contattato',
-    vehicleOfInterest: 'Fiat 500 Elettrica',
-    notes: 'Ha chiesto dettagli sugli incentivi statali. Inviata documentazione.',
-    createdAt: formatISO(subDays(new Date(), 3)),
-    agent: 'Sara Neri',
-  },
-];
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+const AIRTABLE_BASE_ID = 'appHOKi32Fw6IeAnp';
+const AIRTABLE_TABLE_ID = 'tblYvH1wGmDj1zIXs';
 
-// Simulate network delay
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const airtableApiUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`;
+
+const headers = {
+  Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+  'Content-Type': 'application/json',
+};
+
+// Helper to map Airtable fields to our Lead model
+const mapAirtableRecordToLead = (record: any): Lead => {
+  const fields = record.fields;
+  return {
+    id: record.id,
+    name: fields.NomeCognome || '',
+    phone: fields.Recapito || '',
+    // The current app has email, but it's not in the Airtable schema. 
+    // I'll default it to a placeholder.
+    email: fields.Email || `no-email-${record.id}@example.com`, 
+    status: fields.Status || 'Nuovo',
+    vehicleOfInterest: fields.MarcaModello || 'Non specificato',
+    notes: fields.RichiestaGenerica || '',
+    createdAt: fields.Created ? formatISO(new Date(fields.Created)) : new Date().toISOString(),
+    agent: fields.Agent || 'Non Assegnato',
+  };
+};
 
 export async function getLeads(): Promise<Lead[]> {
-  await sleep(500);
-  return leads;
+  try {
+    const response = await fetch(airtableApiUrl, {
+      headers,
+      next: { revalidate: 0 }, // Disable caching
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error fetching leads from Airtable: ${response.statusText}, ${JSON.stringify(errorData)}`);
+    }
+    const data = await response.json();
+    return data.records.map(mapAirtableRecordToLead);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export async function getLeadById(id: string): Promise<Lead | undefined> {
-  await sleep(300);
-  return leads.find((lead) => lead.id === id);
+  try {
+    const response = await fetch(`${airtableApiUrl}/${id}`, {
+      headers,
+      next: { revalidate: 0 },
+    });
+    if (!response.ok) {
+       if (response.status === 404) return undefined;
+      const errorData = await response.json();
+      throw new Error(`Error fetching lead from Airtable: ${response.statusText}, ${JSON.stringify(errorData)}`);
+    }
+    const record = await response.json();
+    return mapAirtableRecordToLead(record);
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
 }
 
 export async function updateLead(id: string, data: Partial<Omit<Lead, 'id'>>): Promise<Lead | undefined> {
-  await sleep(700);
-  const leadIndex = leads.findIndex((lead) => lead.id === id);
-  if (leadIndex === -1) {
-    return undefined;
-  }
-  leads[leadIndex] = { ...leads[leadIndex], ...data };
-  return leads[leadIndex];
+    const airtableData = {
+        fields: {
+            ...(data.name && { NomeCognome: data.name }),
+            ...(data.phone && { Recapito: data.phone }),
+            ...(data.status && { Status: data.status }),
+            ...(data.notes && { RichiestaGenerica: data.notes }),
+             // Add other fields as necessary, mapping back to Airtable field names
+        }
+    };
+
+    try {
+        const response = await fetch(`${airtableApiUrl}/${id}`, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(airtableData),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error updating lead in Airtable: ${response.statusText}, ${JSON.stringify(errorData)}`);
+        }
+        
+        const record = await response.json();
+        return mapAirtableRecordToLead(record);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }

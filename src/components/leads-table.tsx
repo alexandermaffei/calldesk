@@ -28,7 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StatusBadge from './status-badge';
 
-const STATUS_OPTIONS: LeadStatus[] = ['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso'];
+const STATUS_OPTIONS: LeadStatus[] = ['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso', 'Non Risponde', 'Non interessato'];
 
 export default function LeadsTable({ leads }: { leads: Lead[] }) {
   const [searchTerm, setSearchTerm] = React.useState('');

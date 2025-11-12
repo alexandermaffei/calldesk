@@ -40,13 +40,13 @@ const EditLeadSchema = z.object({
   name: z.string().min(2, { message: "Il nome è obbligatorio." }),
   email: z.string().email({ message: "Inserisci un indirizzo email valido." }),
   phone: z.string().min(5, { message: "Il numero di telefono è obbligatorio." }),
-  status: z.enum(['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso']),
+  status: z.enum(['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso', 'Non Risponde', 'Non interessato']),
   notes: z.string().optional(),
 });
 
 type EditLeadFormValues = z.infer<typeof EditLeadSchema>;
 
-const STATUS_OPTIONS: LeadStatus[] = ['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso'];
+const STATUS_OPTIONS: LeadStatus[] = ['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso', 'Non Risponde', 'Non interessato'];
 
 export default function EditLeadForm({ lead }: { lead: Lead }) {
   const { toast } = useToast();
@@ -128,7 +128,7 @@ export default function EditLeadForm({ lead }: { lead: Lead }) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

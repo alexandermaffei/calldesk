@@ -1,4 +1,4 @@
-export type LeadStatus = 'Nuovo' | 'Contattato' | 'In Lavorazione' | 'Chiuso';
+export type LeadStatus = 'Nuovo' | 'Contattato' | 'In Lavorazione' | 'Chiuso' | 'Non Risponde' | 'Non interessato';
 
 export type Lead = {
   id: string;
