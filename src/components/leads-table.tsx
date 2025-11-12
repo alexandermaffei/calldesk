@@ -30,7 +30,7 @@ import StatusBadge from './status-badge';
 
 const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
 
-export default function LeadsTable({ leads }: { leads: Lead[] }) {
+export default function LeadsTable({ leads, title }: { leads: Lead[], title: string }) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilters, setStatusFilters] = React.useState<LeadStatus[]>([]);
 
@@ -62,7 +62,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
     <Card>
       <CardHeader>
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-2">
-          <CardTitle>Tutti i Lead</CardTitle>
+          <CardTitle>{title}</CardTitle>
           <div className="flex w-full flex-1 gap-2 sm:ml-auto sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
@@ -114,7 +114,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                 <TableHead>Data Pref.</TableHead>
                 <TableHead>Orario Pref.</TableHead>
                 <TableHead>Sede</TableHead>
-                <TableHead>Data Lead</TableHead>
+                <TableHead>Data Creazione</TableHead>
                 <TableHead className="text-right">Azioni</TableHead>
               </TableRow>
             </TableHeader>
@@ -139,7 +139,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                   <TableCell>{lead.preferredTime}</TableCell>
                   <TableCell>{lead.location}</TableCell>
                   <TableCell>
-                    {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
+                     {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

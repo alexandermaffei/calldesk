@@ -1,4 +1,4 @@
-import type { Lead } from './definitions';
+import type { Lead, LeadStatus } from './definitions';
 import { formatISO } from 'date-fns';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -40,9 +40,17 @@ const mapAirtableRecordToLead = (record: any): Lead => {
   };
 };
 
-export async function getLeads(): Promise<Lead[]> {
+export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
   try {
-    const response = await fetch(airtableApiUrl, {
+    let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
+    if (statusFilter) {
+      filterByFormula = `AND(${filterByFormula}, {StatusLavorazione} = '${statusFilter}')`;
+    }
+
+    const url = new URL(airtableApiUrl);
+    url.searchParams.append('filterByFormula', filterByFormula);
+    
+    const response = await fetch(url.toString(), {
       headers,
       next: { revalidate: 0 }, // Disable caching
     });
@@ -83,9 +91,7 @@ export async function updateLead(id: string, data: Partial<Omit<Lead, 'id'>>): P
             ...(data.name && { NomeCognome: data.name }),
             ...(data.phone && { Recapito: data.phone }),
             ...(data.status && { StatusLavorazione: data.status }),
-            // Airtable doesn't support updating a formula field directly, so notes cannot be updated this way
-            // ...(data.notes && { RichiestaGenerica: data.notes }),
-             // Add other fields as necessary, mapping back to Airtable field names
+            ...(data.notes && { RichiestaGenerica: data.notes }),
         }
     };
 
