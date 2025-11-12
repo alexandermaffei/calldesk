@@ -2,7 +2,7 @@ import type { Lead, LeadStatus } from './definitions';
 import { formatISO } from 'date-fns';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = 'appHOKi32Fw6IeAnp';
+const AIRTABLE_BASE_ID = 'appn6ol1MU9Uv8Xac';
 const AIRTABLE_TABLE_ID = 'tblYvH1wGmDj1zIXs';
 
 const airtableApiUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`;
