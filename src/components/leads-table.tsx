@@ -28,7 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StatusBadge from './status-badge';
 
-const STATUS_OPTIONS: LeadStatus[] = ['Nuovo', 'Contattato', 'In Lavorazione', 'Chiuso', 'Non Risponde', 'Non interessato'];
+const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
 
 export default function LeadsTable({ leads }: { leads: Lead[] }) {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -105,6 +105,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Cliente</TableHead>
+                <TableHead>Stato</TableHead>
                 <TableHead>Richiesta</TableHead>
                 <TableHead>Veicolo</TableHead>
                 <TableHead>Targa</TableHead>
@@ -125,6 +126,9 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                     <div className="text-sm text-muted-foreground">
                       {lead.phone}
                     </div>
+                  </TableCell>
+                   <TableCell>
+                    <StatusBadge status={lead.status} />
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate">{lead.notes}</TableCell>
                   <TableCell>{lead.vehicleOfInterest}</TableCell>

@@ -25,7 +25,7 @@ const mapAirtableRecordToLead = (record: any): Lead => {
     name: fields.NomeCognome || '',
     phone: fields.Recapito || '',
     email: fields.Email || `no-email-${record.id}@example.com`,
-    status: fields.Status || 'Nuovo',
+    status: fields.StatusLavorazione || 'Da contattare',
     notes: notes,
     vehicleOfInterest: fields.MarcaModello || 'N/A',
     plate: fields.Targa || 'N/A',
@@ -82,7 +82,7 @@ export async function updateLead(id: string, data: Partial<Omit<Lead, 'id'>>): P
         fields: {
             ...(data.name && { NomeCognome: data.name }),
             ...(data.phone && { Recapito: data.phone }),
-            ...(data.status && { Status: data.status }),
+            ...(data.status && { StatusLavorazione: data.status }),
             // Airtable doesn't support updating a formula field directly, so notes cannot be updated this way
             // ...(data.notes && { RichiestaGenerica: data.notes }),
              // Add other fields as necessary, mapping back to Airtable field names
