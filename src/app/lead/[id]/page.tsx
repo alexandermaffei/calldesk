@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { ArrowLeft, Car, Mail, Phone, User, NotebookText } from 'lucide-react';
+import { ArrowLeft, Car, Mail, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info } from 'lucide-react';
 
 import { getLeadById } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -62,6 +62,30 @@ export default async function LeadDetailPage({
               <div className="flex items-center gap-4 text-sm">
                 <Car className="size-4 shrink-0 text-muted-foreground" />
                 <span>Veicolo: <span className="font-medium">{lead.vehicleOfInterest}</span></span>
+              </div>
+               <div className="flex items-center gap-4 text-sm">
+                <Tag className="size-4 shrink-0 text-muted-foreground" />
+                <span>Targa: <span className="font-medium">{lead.plate}</span></span>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <Info className="size-4 shrink-0 text-muted-foreground" />
+                <span>Tipo Intervento: <span className="font-medium">{lead.interventionType}</span></span>
+              </div>
+               <div className="flex items-center gap-4 text-sm">
+                <Building className="size-4 shrink-0 text-muted-foreground" />
+                <span>Sede: <span className="font-medium">{lead.location}</span></span>
+              </div>
+               <div className="flex items-center gap-4 text-sm">
+                <Calendar className="size-4 shrink-0 text-muted-foreground" />
+                <span>Data Preferita: <span className="font-medium">{lead.preferredDate}</span></span>
+              </div>
+               <div className="flex items-center gap-4 text-sm">
+                <Clock className="size-4 shrink-0 text-muted-foreground" />
+                <span>Orario Preferito: <span className="font-medium">{lead.preferredTime}</span></span>
+              </div>
+                <div className="flex items-center gap-4 text-sm">
+                <Clock className="size-4 shrink-0 text-muted-foreground" />
+                <span>Orario Ricontatto: <span className="font-medium">{lead.contactTime}</span></span>
               </div>
               {lead.notes && (
                  <div className="flex items-start gap-4 text-sm">

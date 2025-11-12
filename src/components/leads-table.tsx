@@ -38,9 +38,10 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
     return leads.filter((lead) => {
       const searchMatch =
         lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.phone.includes(searchTerm) ||
-        lead.vehicleOfInterest.toLowerCase().includes(searchTerm.toLowerCase());
+        lead.vehicleOfInterest.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.location.toLowerCase().includes(searchTerm.toLowerCase());
 
       const statusMatch =
         statusFilters.length === 0 || statusFilters.includes(lead.status);
@@ -67,7 +68,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Cerca per nome, veicolo..."
+                placeholder="Cerca lead..."
                 className="pl-8 sm:w-[300px]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -104,10 +105,15 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Cliente</TableHead>
-                <TableHead className="hidden md:table-cell">Veicolo</TableHead>
-                <TableHead>Stato</TableHead>
-                <TableHead className="hidden lg:table-cell">Agente</TableHead>
-                <TableHead className="hidden sm:table-cell">Data</TableHead>
+                <TableHead>Richiesta</TableHead>
+                <TableHead>Veicolo</TableHead>
+                <TableHead>Targa</TableHead>
+                <TableHead>Tipo Intervento</TableHead>
+                <TableHead>Ricontatto</TableHead>
+                <TableHead>Data Pref.</TableHead>
+                <TableHead>Orario Pref.</TableHead>
+                <TableHead>Sede</TableHead>
+                <TableHead>Data Lead</TableHead>
                 <TableHead className="text-right">Azioni</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,19 +122,20 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                 <TableRow key={lead.id}>
                   <TableCell>
                     <div className="font-medium">{lead.name}</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      {lead.email}
+                    <div className="text-sm text-muted-foreground">
+                      {lead.phone}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {lead.vehicleOfInterest}
-                  </TableCell>
+                  <TableCell className="max-w-[250px] truncate">{lead.notes}</TableCell>
+                  <TableCell>{lead.vehicleOfInterest}</TableCell>
+                  <TableCell>{lead.plate}</TableCell>
+                  <TableCell>{lead.interventionType}</TableCell>
+                  <TableCell>{lead.contactTime}</TableCell>
+                  <TableCell>{lead.preferredDate}</TableCell>
+                  <TableCell>{lead.preferredTime}</TableCell>
+                  <TableCell>{lead.location}</TableCell>
                   <TableCell>
-                    <StatusBadge status={lead.status} />
-                  </TableCell>
-                   <TableCell className="hidden lg:table-cell">{lead.agent}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
+                    {format(parseISO(lead.createdAt), 'd MMM yyyy HH:mm', { locale: it })}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

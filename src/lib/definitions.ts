@@ -2,12 +2,19 @@ export type LeadStatus = 'Nuovo' | 'Contattato' | 'In Lavorazione' | 'Chiuso' | 
 
 export type Lead = {
   id: string;
-  name: string;
-  phone: string;
-  email: string;
-  status: LeadStatus;
-  vehicleOfInterest: string;
-  notes: string;
-  createdAt: string; // ISO date string
-  agent: string;
+  name: string; // NomeCognome
+  phone: string; // Recapito
+  email: string; // Non presente in Airtable, ma mantenuto per compatibilità
+  status: LeadStatus; // Status
+  notes: string; // RichiestaGenerica + RichiestaSpecifica
+  vehicleOfInterest: string; // MarcaModello
+  plate: string; // Targa
+  interventionType: string; // TipoIntervento
+  contactTime: string; // OrarioRicontatto
+  preferredDate: string; // DataPreferita
+  preferredTime: string; // Orario
+  location: string; // Sede
+  requestDate: string; // Data
+  createdAt: string; // Created (Airtable metadata)
+  agent: string; // Agent
 };

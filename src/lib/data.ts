@@ -1,8 +1,8 @@
-import type { Lead, LeadStatus } from './definitions';
+import type { Lead } from './definitions';
 import { formatISO } from 'date-fns';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = 'appn6ol1MU9Uv8Xac';
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appn6ol1MU9Uv8Xac';
 const AIRTABLE_TABLE_ID = 'tblYvH1wGmDj1zIXs';
 
 const airtableApiUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`;
@@ -15,16 +15,26 @@ const headers = {
 // Helper to map Airtable fields to our Lead model
 const mapAirtableRecordToLead = (record: any): Lead => {
   const fields = record.fields;
+  
+  const richiestaGenerica = fields.RichiestaGenerica || '';
+  const richiestaSpecifica = fields.RichiestaSpecifica || '';
+  const notes = [richiestaGenerica, richiestaSpecifica].filter(Boolean).join(' - ');
+
   return {
     id: record.id,
     name: fields.NomeCognome || '',
     phone: fields.Recapito || '',
-    // The current app has email, but it's not in the Airtable schema. 
-    // I'll default it to a placeholder.
-    email: fields.Email || `no-email-${record.id}@example.com`, 
+    email: fields.Email || `no-email-${record.id}@example.com`,
     status: fields.Status || 'Nuovo',
-    vehicleOfInterest: fields.MarcaModello || 'Non specificato',
-    notes: fields.RichiestaGenerica || '',
+    notes: notes,
+    vehicleOfInterest: fields.MarcaModello || 'N/A',
+    plate: fields.Targa || 'N/A',
+    interventionType: fields.TipoIntervento || 'N/A',
+    contactTime: fields.OrarioRicontatto || 'N/A',
+    preferredDate: fields.DataPreferita || 'N/A',
+    preferredTime: fields.Orario || 'N/A',
+    location: fields.Sede || 'N/A',
+    requestDate: fields.Data ? formatISO(new Date(fields.Data)) : 'N/A',
     createdAt: fields.Created ? formatISO(new Date(fields.Created)) : new Date().toISOString(),
     agent: fields.Agent || 'Non Assegnato',
   };
@@ -73,7 +83,8 @@ export async function updateLead(id: string, data: Partial<Omit<Lead, 'id'>>): P
             ...(data.name && { NomeCognome: data.name }),
             ...(data.phone && { Recapito: data.phone }),
             ...(data.status && { Status: data.status }),
-            ...(data.notes && { RichiestaGenerica: data.notes }),
+            // Airtable doesn't support updating a formula field directly, so notes cannot be updated this way
+            // ...(data.notes && { RichiestaGenerica: data.notes }),
              // Add other fields as necessary, mapping back to Airtable field names
         }
     };
