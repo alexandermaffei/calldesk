@@ -3,16 +3,6 @@ import Link from 'next/link';
 import { Home, Phone, Settings, User } from 'lucide-react';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -48,38 +38,26 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-          <Sidebar>
-            <SidebarHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Phone className="size-6" />
-                </div>
-                <div className="flex flex-col">
-                  <h2 className="font-headline text-xl font-bold tracking-tight">
-                    CallDesk
-                  </h2>
-                  <p className="text-xs text-muted-foreground">Lead Manager</p>
-                </div>
+        <div className="flex min-h-screen w-full flex-col">
+          <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Phone className="size-6" />
               </div>
-            </SidebarHeader>
-            <SidebarContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href="/">
-                      <Home />
-                      <span>Dashboard</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarContent>
-          </Sidebar>
-          <div className="flex flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-              <SidebarTrigger className="md:hidden" />
-              <div className="flex-1" />
+              <div className="flex flex-col">
+                <h2 className="font-headline text-xl font-bold tracking-tight">
+                  CallDesk
+                </h2>
+                <p className="text-xs text-muted-foreground">Lead Manager</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/">
+                  <Home className="size-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -101,10 +79,10 @@ export default function RootLayout({
                   <DropdownMenuItem>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </header>
-            <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
-          </div>
-        </SidebarProvider>
+            </div>
+          </header>
+          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+        </div>
         <Toaster />
       </body>
     </html>
