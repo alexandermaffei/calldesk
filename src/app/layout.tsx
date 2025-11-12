@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import AIAgentButton from '@/components/ai-agent-button';
 
 export const metadata: Metadata = {
   title: 'CallDesk Lead Manager',
@@ -83,6 +84,7 @@ export default function RootLayout({
           </header>
           <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
         </div>
+        <AIAgentButton />
         <Toaster />
       </body>
     </html>
