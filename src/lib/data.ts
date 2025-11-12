@@ -40,6 +40,10 @@ const mapAirtableRecordToLead = (record: any): Lead => {
   };
 };
 
+export async function getAllLeads(): Promise<Lead[]> {
+  return getLeads();
+}
+
 export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
   try {
     let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
@@ -49,6 +53,8 @@ export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
 
     const url = new URL(airtableApiUrl);
     url.searchParams.append('filterByFormula', filterByFormula);
+    url.searchParams.append('sort[0][field]', 'Created');
+    url.searchParams.append('sort[0][direction]', 'desc');
     
     const response = await fetch(url.toString(), {
       headers,
