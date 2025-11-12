@@ -38,7 +38,7 @@ export default async function LeadDetailPage({
               <CardTitle className="font-headline text-2xl tracking-tight">{lead.name}</CardTitle>
               <CardDescription>
                 Lead creato il{' '}
-                {format(parseISO(lead.createdAt), "d MMMM yyyy 'alle' HH:mm", {
+                {format(parseISO(lead.createdAt), "d MMMM yyyy", {
                   locale: it,
                 })}
               </CardDescription>

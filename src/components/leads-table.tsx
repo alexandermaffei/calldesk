@@ -40,7 +40,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
         lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.phone.includes(searchTerm) ||
         lead.vehicleOfInterest.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.plate && lead.plate.toLowerCase().includes(searchTerm.toLowerCase())) ||
         lead.location.toLowerCase().includes(searchTerm.toLowerCase());
 
       const statusMatch =
@@ -135,7 +135,7 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                   <TableCell>{lead.preferredTime}</TableCell>
                   <TableCell>{lead.location}</TableCell>
                   <TableCell>
-                    {format(parseISO(lead.createdAt), 'd MMM yyyy HH:mm', { locale: it })}
+                    {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
