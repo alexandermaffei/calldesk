@@ -45,27 +45,40 @@ export async function getAllLeads(): Promise<Lead[]> {
 }
 
 export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
-  try {
-    let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
-    if (statusFilter) {
-      filterByFormula = `AND(${filterByFormula}, {StatusLavorazione} = '${statusFilter}')`;
-    }
+  let allRecords: any[] = [];
+  let offset = '';
 
-    const url = new URL(airtableApiUrl);
-    url.searchParams.append('filterByFormula', filterByFormula);
-    url.searchParams.append('sort[0][field]', 'Created');
-    url.searchParams.append('sort[0][direction]', 'desc');
+  try {
+    do {
+      let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
+      if (statusFilter) {
+        filterByFormula = `AND(${filterByFormula}, {StatusLavorazione} = '${statusFilter}')`;
+      }
+      
+      const url = new URL(airtableApiUrl);
+      url.searchParams.append('filterByFormula', filterByFormula);
+      url.searchParams.append('sort[0][field]', 'Created');
+      url.searchParams.append('sort[0][direction]', 'desc');
+      if (offset) {
+        url.searchParams.append('offset', offset);
+      }
+
+      const response = await fetch(url.toString(), {
+        headers,
+        next: { revalidate: 0 }, // Disable caching
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error fetching leads from Airtable: ${response.statusText}, ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      allRecords = allRecords.concat(data.records);
+      offset = data.offset;
+    } while (offset);
     
-    const response = await fetch(url.toString(), {
-      headers,
-      next: { revalidate: 0 }, // Disable caching
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Error fetching leads from Airtable: ${response.statusText}, ${JSON.stringify(errorData)}`);
-    }
-    const data = await response.json();
-    return data.records.map(mapAirtableRecordToLead);
+    return allRecords.map(mapAirtableRecordToLead);
   } catch (error) {
     console.error(error);
     return [];
@@ -91,7 +104,7 @@ export async function getLeadById(id: string): Promise<Lead | undefined> {
   }
 }
 
-export async function updateLead(id: string, data: Partial<Omit<Lead, 'id'>>): Promise<Lead | undefined> {
+export async function updateLead(id: string, data: Partial<Omit<Lead, 'id' | 'createdAt'>>): Promise<Lead | undefined> {
     const airtableData = {
         fields: {
             ...(data.name && { NomeCognome: data.name }),
