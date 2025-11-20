@@ -19,12 +19,11 @@ export default function LeadDetailPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = params;
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchLead = async () => {
+  const fetchLead = async (id: string) => {
     setLoading(true);
     const fetchedLead = await getLeadById(id);
     if (!fetchedLead) {
@@ -35,12 +34,18 @@ export default function LeadDetailPage({
   };
 
   useEffect(() => {
-    fetchLead();
-  }, [id]);
+    const { id } = params;
+    if (id) {
+      fetchLead(id);
+    }
+  }, [params]);
 
   const handleStatusChange = () => {
     // Re-fetch lead data after status update to get the latest info
-    fetchLead();
+    const { id } = params;
+    if (id) {
+      fetchLead(id);
+    }
     // Also revalidate the main page cache
     router.refresh();
   };
