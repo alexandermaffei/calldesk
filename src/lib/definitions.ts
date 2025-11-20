@@ -7,6 +7,7 @@ export type Lead = {
   email: string; // Non presente in Airtable, ma mantenuto per compatibilità
   status: LeadStatus; // StatusLavorazione
   notes: string; // RichiestaGenerica + RichiestaSpecifica
+  operatorNotes?: string; // NoteOperatore
   vehicleOfInterest: string; // MarcaModello
   plate: string; // Targa
   interventionType: string; // TipoIntervento

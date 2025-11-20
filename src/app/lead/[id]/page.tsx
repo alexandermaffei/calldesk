@@ -5,7 +5,7 @@ import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { ArrowLeft, Car, Mail, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, Car, Mail, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, MessageSquareQuote } from 'lucide-react';
 
 import { getLeadById } from '@/lib/data';
 import type { Lead } from '@/lib/definitions';
@@ -148,6 +148,15 @@ export default function LeadDetailPage({
                  <div className="flex items-start gap-4 text-sm">
                     <NotebookText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                     <p className="whitespace-pre-wrap text-muted-foreground">{lead.notes}</p>
+                 </div>
+              )}
+               {lead.operatorNotes && (
+                 <div className="flex items-start gap-4 text-sm">
+                    <MessageSquareQuote className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                    <div>
+                        <p className='font-medium text-foreground'>Note Operatore</p>
+                        <p className="whitespace-pre-wrap text-muted-foreground">{lead.operatorNotes}</p>
+                    </div>
                  </div>
               )}
             </CardContent>

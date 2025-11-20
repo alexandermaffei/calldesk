@@ -27,6 +27,7 @@ const mapAirtableRecordToLead = (record: any): Lead => {
     email: fields.Email || `no-email-${record.id}@example.com`,
     status: fields.StatusLavorazione || 'Da contattare',
     notes: notes,
+    operatorNotes: fields.NoteOperatore || '',
     vehicleOfInterest: fields.MarcaModello || 'N/A',
     plate: fields.Targa || 'N/A',
     interventionType: fields.TipoIntervento || 'N/A',
