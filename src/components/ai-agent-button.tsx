@@ -21,21 +21,16 @@ export default function AIAgentButton() {
     setPopoverOpen(true);
 
     try {
-      const response = await fetch(
-        "https://hook.eu2.make.com/rwq2wb22gxx3guhbb36v3spa65ido155",
-        {
-          method: "POST",
-          headers: {
-            "x-make-apikey": "MWEjRKC4N9hY7h9hWx1gJKQnBDC3Cz7V",
-          },
-        }
-      );
+      const response = await fetch("/api/ai-agent", {
+        method: "POST",
+      });
 
       if (response.ok) {
-        const textResponse = await response.text();
-        setAgentResponse(textResponse);
+        const data = await response.json();
+        setAgentResponse(data.response);
       } else {
-        throw new Error("La richiesta al server non è andata a buon fine.");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "La richiesta al server non è andata a buon fine.");
       }
     } catch (err) {
       console.error("Errore durante la chiamata all'agente AI:", err);

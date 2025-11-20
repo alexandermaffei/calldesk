@@ -5,11 +5,20 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appn6ol1MU9Uv8Xac';
 const AIRTABLE_TABLE_ID = 'tblYvH1wGmDj1zIXs';
 
+if (!AIRTABLE_API_KEY) {
+  console.error('⚠️  AIRTABLE_API_KEY non è configurata nel file .env.local');
+}
+
 const airtableApiUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`;
 
-const headers = {
-  Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-  'Content-Type': 'application/json',
+const getHeaders = () => {
+  if (!AIRTABLE_API_KEY) {
+    throw new Error('AIRTABLE_API_KEY non configurata. Aggiungila al file .env.local');
+  }
+  return {
+    Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+    'Content-Type': 'application/json',
+  };
 };
 
 // Helper to map Airtable fields to our Lead model
@@ -65,7 +74,7 @@ export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
       }
 
       const response = await fetch(url.toString(), {
-        headers,
+        headers: getHeaders(),
         next: { revalidate: 0 }, // Disable caching
       });
 
@@ -89,7 +98,7 @@ export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
 export async function getLeadById(id: string): Promise<Lead | undefined> {
   try {
     const response = await fetch(`${airtableApiUrl}/${id}`, {
-      headers,
+      headers: getHeaders(),
       next: { revalidate: 0 },
     });
     if (!response.ok) {
@@ -112,13 +121,14 @@ export async function updateLead(id: string, data: Partial<Omit<Lead, 'id' | 'cr
             ...(data.phone && { Recapito: data.phone }),
             ...(data.status && { StatusLavorazione: data.status }),
             ...(data.notes && { RichiestaGenerica: data.notes }),
+            ...(data.operatorNotes !== undefined && { NoteOperatore: data.operatorNotes }),
         }
     };
 
     try {
         const response = await fetch(`${airtableApiUrl}/${id}`, {
             method: 'PATCH',
-            headers,
+            headers: getHeaders(),
             body: JSON.stringify(airtableData),
         });
 

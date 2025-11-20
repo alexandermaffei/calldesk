@@ -1,48 +1,60 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { ArrowLeft, Car, Mail, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, MessageSquareQuote } from 'lucide-react';
 
-import { getLeadById } from '@/lib/data';
 import type { Lead } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusUpdater } from '@/components/status-updater';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OperatorNotesEditor } from '@/components/operator-notes-editor';
 
 export default function LeadDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const fetchLead = async (id: string) => {
     setLoading(true);
-    const fetchedLead = await getLeadById(id);
-    if (!fetchedLead) {
+    try {
+      const response = await fetch(`/api/leads/${id}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          notFound();
+          return;
+        }
+        throw new Error('Errore nel recupero del lead');
+      }
+      const fetchedLead: Lead = await response.json();
+      setLead(fetchedLead);
+    } catch (error) {
+      console.error('Errore nel recupero del lead:', error);
       notFound();
+    } finally {
+      setLoading(false);
     }
-    setLead(fetchedLead);
-    setLoading(false);
   };
 
   useEffect(() => {
-    if (params.id) {
-      fetchLead(params.id);
+    if (id) {
+      fetchLead(id);
     }
-  }, [params.id]);
+  }, [id]);
 
   const handleStatusChange = () => {
     // Re-fetch lead data after status update to get the latest info
-    if (params.id) {
-      fetchLead(params.id);
+    if (id) {
+      fetchLead(id);
     }
     // Also revalidate the main page cache
     router.refresh();
@@ -87,7 +99,7 @@ export default function LeadDetailPage({
           </Link>
         </Button>
       </div>
-      <div className="grid gap-6">
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-2xl tracking-tight">{lead.name}</CardTitle>
@@ -148,17 +160,15 @@ export default function LeadDetailPage({
                     <p className="whitespace-pre-wrap text-muted-foreground">{lead.notes}</p>
                  </div>
               )}
-               {lead.operatorNotes && (
-                 <div className="flex items-start gap-4 text-sm">
-                    <MessageSquareQuote className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                    <div>
-                        <p className='font-medium text-foreground'>Note Operatore</p>
-                        <p className="whitespace-pre-wrap text-muted-foreground">{lead.operatorNotes}</p>
-                    </div>
-                 </div>
-              )}
             </CardContent>
         </Card>
+        <div>
+          <OperatorNotesEditor 
+            leadId={lead.id} 
+            initialNotes={lead.operatorNotes || ''} 
+            onSave={handleStatusChange}
+          />
+        </div>
       </div>
     </div>
   );

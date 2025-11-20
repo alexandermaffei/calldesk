@@ -30,10 +30,7 @@ export function StatusUpdater({ lead, onStatusChange }: { lead: Lead, onStatusCh
           variant: "destructive",
         });
       } else {
-         toast({
-          title: "Successo",
-          description: `Lo stato del lead "${lead.name}" è stato aggiornato a "${newStatus}".`
-        });
+        // Status aggiornato senza mostrare toast
         if (onStatusChange) {
             onStatusChange();
         }

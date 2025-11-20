@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from 'react';
-import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { MoreHorizontal, Search, ListFilter } from 'lucide-react';
@@ -27,12 +26,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusUpdater } from './status-updater';
+import { LeadDetailDialog } from './lead-detail-dialog';
 
 const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
 
 export default function LeadsTable({ leads, title }: { leads: Lead[], title: string }) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilters, setStatusFilters] = React.useState<LeadStatus[]>([]);
+  const [selectedLeadId, setSelectedLeadId] = React.useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
 
   const filteredLeads = React.useMemo(() => {
     return leads.filter((lead) => {
@@ -56,6 +58,26 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
         ? prev.filter((s) => s !== status)
         : [...prev, status]
     );
+  };
+
+  const handleRowClick = (leadId: string, e: React.MouseEvent) => {
+    // Don't open dialog if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('button') ||
+      target.closest('a') ||
+      target.closest('[role="button"]') ||
+      target.closest('.dropdown-menu')
+    ) {
+      return;
+    }
+    setSelectedLeadId(leadId);
+    setDialogOpen(true);
+  };
+
+  const handleStatusChange = () => {
+    // Refresh the leads list if needed
+    // This could trigger a refetch if you have that set up
   };
   
   return (
@@ -120,15 +142,19 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
             </TableHeader>
             <TableBody>
               {filteredLeads.map((lead) => (
-                <TableRow key={lead.id}>
+                <TableRow 
+                  key={lead.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={(e) => handleRowClick(lead.id, e)}
+                >
                   <TableCell>
                     <div className="font-medium">{lead.name}</div>
                     <div className="text-sm text-muted-foreground">
                       {lead.phone}
                     </div>
                   </TableCell>
-                   <TableCell>
-                     <StatusUpdater lead={lead} />
+                   <TableCell onClick={(e) => e.stopPropagation()}>
+                     <StatusUpdater lead={lead} onStatusChange={handleStatusChange} />
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate">{lead.notes}</TableCell>
                   <TableCell>{lead.vehicleOfInterest}</TableCell>
@@ -141,7 +167,7 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                   <TableCell>
                      {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button aria-haspopup="true" size="icon" variant="ghost">
@@ -151,8 +177,11 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Azioni</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                           <Link href={`/lead/${lead.id}`}>Vedi Dettagli</Link>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedLeadId(lead.id);
+                          setDialogOpen(true);
+                        }}>
+                          Vedi Dettagli
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -168,6 +197,12 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
           </div>
         )}
       </CardContent>
+      <LeadDetailDialog
+        leadId={selectedLeadId}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onStatusChange={handleStatusChange}
+      />
     </Card>
   );
 }
