@@ -8,16 +8,14 @@ import type { LeadStatus } from "./definitions";
 const EditLeadSchema = z.object({
   id: z.string(),
   name: z.string().min(2, { message: "Il nome è obbligatorio." }),
-  email: z.string().email({ message: "Inserisci un indirizzo email valido." }),
   phone: z.string().min(5, { message: "Il numero di telefono è obbligatorio." }),
-  status: z.enum(['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare', 'Nuovo', 'In Lavorazione', 'Chiuso', 'Non Risponde', 'Non interessato']),
+  status: z.enum(['Da gestire', 'Gestita']),
   notes: z.string().optional(),
 });
 
 export type State = {
   errors?: {
     name?: string[];
-    email?: string[];
     phone?: string[];
     status?: string[];
     notes?: string[];
@@ -29,7 +27,6 @@ export async function updateLeadAction(id: string, prevState: State, formData: F
   const validatedFields = EditLeadSchema.safeParse({
     id: id,
     name: formData.get("name"),
-    email: formData.get("email"),
     phone: formData.get("phone"),
     status: formData.get("status"),
     notes: formData.get("notes"),

@@ -28,7 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusUpdater } from './status-updater';
 import { LeadDetailDialog } from './lead-detail-dialog';
 
-const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
+const STATUS_OPTIONS: LeadStatus[] = ['Da gestire', 'Gestita'];
 
 export default function LeadsTable({ leads, title }: { leads: Lead[], title: string }) {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -79,6 +79,23 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
     // Refresh the leads list if needed
     // This could trigger a refetch if you have that set up
   };
+
+  // Ascolta eventi per aprire il dialog da notifiche desktop
+  React.useEffect(() => {
+    const handleOpenLeadDialog = (event: Event) => {
+      const customEvent = event as CustomEvent<{ leadId: string }>;
+      const { leadId } = customEvent.detail;
+      if (leadId) {
+        setSelectedLeadId(leadId);
+        setDialogOpen(true);
+      }
+    };
+
+    window.addEventListener('openLeadDialog', handleOpenLeadDialog);
+    return () => {
+      window.removeEventListener('openLeadDialog', handleOpenLeadDialog);
+    };
+  }, []);
   
   return (
     <Card>

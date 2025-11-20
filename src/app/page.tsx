@@ -6,7 +6,7 @@ import Link from 'next/link';
 import KpiCard from '@/components/kpi-card';
 import { List, Phone, PhoneForwarded } from 'lucide-react';
 
-type View = 'all' | 'to-contact' | 'closed';
+type View = 'all' | 'to-manage' | 'managed';
 
 const viewConfig: Record<
   View,
@@ -16,15 +16,15 @@ const viewConfig: Record<
     title: 'Tutte le lead',
     tabLabel: 'Tutte le lead',
   },
-  'to-contact': {
-    title: 'Lead da Contattare',
-    status: 'Da contattare',
-    tabLabel: 'Da Contattare',
+  'to-manage': {
+    title: 'Lead da gestire',
+    status: 'Da gestire',
+    tabLabel: 'Lead da gestire',
   },
-  closed: {
-    title: 'Lead Chiuse',
-    status: 'Contattato',
-    tabLabel: 'Lead Chiuse',
+  managed: {
+    title: 'Lead gestite',
+    status: 'Gestita',
+    tabLabel: 'Lead gestite',
   },
 };
 
@@ -40,11 +40,11 @@ export default async function DashboardPage({
   const allLeads = await getAllLeads();
 
   const totalLeads = allLeads.length;
-  const leadsToContact = allLeads.filter(
-    (lead) => lead.status === 'Da contattare'
+  const leadsToManage = allLeads.filter(
+    (lead) => lead.status === 'Da gestire'
   ).length;
-  const leadsContacted = allLeads.filter(
-    (lead) => lead.status === 'Contattato' || lead.status === 'Contatto fallito, da ricontattare'
+  const leadsManaged = allLeads.filter(
+    (lead) => lead.status === 'Gestita'
   ).length;
 
   return (
@@ -60,8 +60,8 @@ export default async function DashboardPage({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <KpiCard title="Totale lead ricevute" value={totalLeads} icon={<List className="size-6" />} />
-        <KpiCard title="Lead da contattare" value={leadsToContact} icon={<Phone className="size-6" />} />
-        <KpiCard title="Lead contattate" value={leadsContacted} icon={<PhoneForwarded className="size-6" />} />
+        <KpiCard title="Lead da gestire" value={leadsToManage} icon={<Phone className="size-6" />} />
+        <KpiCard title="Lead gestite" value={leadsManaged} icon={<PhoneForwarded className="size-6" />} />
       </div>
 
       <Tabs defaultValue={currentView}>
@@ -69,13 +69,13 @@ export default async function DashboardPage({
           <TabsTrigger value="all" asChild>
             <Link href="/?view=all">{viewConfig.all.tabLabel}</Link>
           </TabsTrigger>
-          <TabsTrigger value="to-contact" asChild>
-            <Link href="/?view=to-contact">
-              {viewConfig['to-contact'].tabLabel}
+          <TabsTrigger value="to-manage" asChild>
+            <Link href="/?view=to-manage">
+              {viewConfig['to-manage'].tabLabel}
             </Link>
           </TabsTrigger>
-          <TabsTrigger value="closed" asChild>
-            <Link href="/?view=closed">{viewConfig.closed.tabLabel}</Link>
+          <TabsTrigger value="managed" asChild>
+            <Link href="/?view=managed">{viewConfig.managed.tabLabel}</Link>
           </TabsTrigger>
         </TabsList>
       </Tabs>

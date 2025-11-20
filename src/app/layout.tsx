@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import AIAgentButton from '@/components/ai-agent-button';
+import { NotificationsProvider } from '@/components/notifications-provider';
+import { NotificationsBell } from '@/components/notifications-bell';
 
 export const metadata: Metadata = {
   title: 'CallDesk Lead Manager',
@@ -59,6 +61,7 @@ export default function RootLayout({
                   <span className="hidden sm:inline">Dashboard</span>
                 </Link>
               </Button>
+              <NotificationsBell />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -85,6 +88,7 @@ export default function RootLayout({
           <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
         </div>
         <AIAgentButton />
+        <NotificationsProvider />
         <Toaster />
       </body>
     </html>

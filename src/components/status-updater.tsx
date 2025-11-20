@@ -14,7 +14,7 @@ import {
 import StatusBadge from './status-badge';
 import { useToast } from '@/hooks/use-toast';
 
-const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
+const STATUS_OPTIONS: LeadStatus[] = ['Da gestire', 'Gestita'];
 
 export function StatusUpdater({ lead, onStatusChange }: { lead: Lead, onStatusChange?: () => void }) {
   const { toast } = useToast();

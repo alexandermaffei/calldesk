@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { Car, Mail, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info } from 'lucide-react';
+import { Car, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info } from 'lucide-react';
 import type { Lead } from '@/lib/definitions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -151,10 +151,6 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
                   <div className="flex items-center gap-4 text-sm">
                     <Phone className="size-4 shrink-0 text-muted-foreground" />
                     <a href={`tel:${lead.phone}`} className="hover:underline">{lead.phone}</a>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <Mail className="size-4 shrink-0 text-muted-foreground" />
-                    <a href={`mailto:${lead.email}`} className="hover:underline">{lead.email}</a>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <Car className="size-4 shrink-0 text-muted-foreground" />
