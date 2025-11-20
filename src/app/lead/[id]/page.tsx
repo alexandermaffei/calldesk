@@ -34,17 +34,15 @@ export default function LeadDetailPage({
   };
 
   useEffect(() => {
-    const { id } = params;
-    if (id) {
-      fetchLead(id);
+    if (params.id) {
+      fetchLead(params.id);
     }
-  }, [params]);
+  }, [params.id]);
 
   const handleStatusChange = () => {
     // Re-fetch lead data after status update to get the latest info
-    const { id } = params;
-    if (id) {
-      fetchLead(id);
+    if (params.id) {
+      fetchLead(params.id);
     }
     // Also revalidate the main page cache
     router.refresh();
