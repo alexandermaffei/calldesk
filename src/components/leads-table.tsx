@@ -6,6 +6,7 @@ import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { MoreHorizontal, Search, ListFilter } from 'lucide-react';
 import type { Lead, LeadStatus } from '@/lib/definitions';
+import { updateLeadStatusAction } from '@/lib/actions';
 import {
   Table,
   TableBody,
@@ -27,8 +28,55 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StatusBadge from './status-badge';
+import { useToast } from '@/hooks/use-toast';
+
 
 const STATUS_OPTIONS: LeadStatus[] = ['Da contattare', 'Contattato', 'Contatto fallito, da ricontattare'];
+
+function StatusUpdater({ lead }: { lead: Lead }) {
+  const { toast } = useToast();
+  const [isPending, startTransition] = React.useTransition();
+
+  const handleStatusChange = (newStatus: LeadStatus) => {
+    startTransition(async () => {
+      const result = await updateLeadStatusAction(lead.id, newStatus);
+      if (result?.message.startsWith("Errore")) {
+         toast({
+          title: "Errore",
+          description: result.message,
+          variant: "destructive",
+        });
+      } else {
+         toast({
+          title: "Successo",
+          description: `Lo stato del lead "${lead.name}" è stato aggiornato a "${newStatus}".`
+        });
+      }
+    });
+  };
+
+  const availableStatuses = STATUS_OPTIONS.filter(s => s !== lead.status);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button disabled={isPending}>
+           <StatusBadge status={lead.status} className="cursor-pointer hover:opacity-80 transition-opacity" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuLabel>Cambia stato</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {availableStatuses.map((status) => (
+          <DropdownMenuItem key={status} onSelect={() => handleStatusChange(status)}>
+            {status}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 
 export default function LeadsTable({ leads, title }: { leads: Lead[], title: string }) {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -128,7 +176,7 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                     </div>
                   </TableCell>
                    <TableCell>
-                    <StatusBadge status={lead.status} />
+                     <StatusUpdater lead={lead} />
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate">{lead.notes}</TableCell>
                   <TableCell>{lead.vehicleOfInterest}</TableCell>

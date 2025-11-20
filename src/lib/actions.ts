@@ -56,3 +56,13 @@ export async function updateLeadAction(id: string, prevState: State, formData: F
   revalidatePath("/");
   return { message: "Lead aggiornato con successo." };
 }
+
+export async function updateLeadStatusAction(id: string, status: LeadStatus) {
+  try {
+    await updateLead(id, { status });
+    revalidatePath("/");
+    return { message: "Stato lead aggiornato." };
+  } catch (error) {
+    return { message: "Errore: Impossibile aggiornare lo stato del lead." };
+  }
+}
