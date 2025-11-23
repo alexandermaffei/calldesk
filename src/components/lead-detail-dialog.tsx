@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { Car, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info } from 'lucide-react';
+import { Car, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, CalendarCheck, Loader2 } from 'lucide-react';
 import type { Lead } from '@/lib/definitions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { StatusUpdater } from './status-updater';
 import { OperatorNotesEditor, type OperatorNotesEditorRef } from './operator-notes-editor';
+import { PitStopBookingDialog } from './pitstop-booking-dialog';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingClose, setPendingClose] = useState(false);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
   const notesEditorRef = useRef<OperatorNotesEditorRef>(null);
 
   const fetchLead = async (id: string) => {
@@ -116,6 +118,14 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
     setPendingClose(false);
   };
 
+  const handleCreatePitStopBooking = () => {
+    setShowBookingDialog(true);
+  };
+
+  const handleBookingSuccess = () => {
+    handleStatusChange();
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -143,6 +153,15 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
                 <CardContent className="grid gap-4">
                   <div className="flex items-center gap-4">
                     <StatusUpdater lead={lead} onStatusChange={handleStatusChange} />
+                  </div>
+                  <div className="flex items-center gap-2 pt-2 border-t">
+                    <Button
+                      onClick={handleCreatePitStopBooking}
+                      className="w-full bg-purple-600 text-white hover:bg-purple-700"
+                    >
+                      <CalendarCheck className="mr-2 size-4" />
+                      Crea Prenotazione in Pit Stop
+                    </Button>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <User className="size-4 shrink-0 text-muted-foreground" />
@@ -225,6 +244,13 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <PitStopBookingDialog
+        open={showBookingDialog}
+        onOpenChange={setShowBookingDialog}
+        lead={lead}
+        onSuccess={handleBookingSuccess}
+      />
     </>
   );
 }

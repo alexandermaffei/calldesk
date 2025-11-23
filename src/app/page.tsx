@@ -31,9 +31,10 @@ const viewConfig: Record<
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams?: { view?: View };
+  searchParams?: Promise<{ view?: View }>;
 }) {
-  const currentView = searchParams?.view || 'all';
+  const resolvedSearchParams = await searchParams;
+  const currentView = resolvedSearchParams?.view || 'all';
   const { title, status } = viewConfig[currentView];
 
   const leadsForTable = await getLeads(status);
