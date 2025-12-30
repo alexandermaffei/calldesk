@@ -46,22 +46,54 @@ const mapAirtableRecordToLead = (record: any): Lead => {
     requestDate: fields.Data ? formatISO(new Date(fields.Data)) : 'N/A',
     createdAt: fields.Created ? formatISO(new Date(fields.Created)) : new Date().toISOString(),
     agent: fields.Agent || 'Non Assegnato',
+    requestType: fields.TipoRichiesta || undefined,
+    // Nuovi campi
+    intestazione: fields.Intestazione || undefined,
+    kilometraggio: fields.Kilometraggio || undefined,
+    veicoloSostitutivo: fields.VeicoloSostitutivo || undefined,
+    altreSegnalazioni: fields.AltreSegnalazioni || undefined,
+    feedback: fields.Feedback || undefined,
+    informazioniAuto: fields.InformazioniAuto || undefined,
+    autoAlternativa: fields.AutoAlternativa || undefined,
+    permuta: fields.Permuta || undefined,
+    ragioneSociale: fields.RagioneSociale || undefined,
+    pagamento: fields.Pagamento || undefined,
+    venditore: fields.Venditore || undefined,
+    cambio: fields.Cambio || undefined,
+    alimentazione: fields.Alimentazione || undefined,
+    sitoAnnuncio: fields.SitoAnnuncio || undefined,
+    provenienza: fields.Provenienza || undefined,
+    pezzoDiRicambio: fields.PezzoDiRicambio || undefined,
+    tipoRichiestaSales: fields.TipoRichiestaSales || undefined,
   };
 };
 
-export async function getAllLeads(): Promise<Lead[]> {
-  return getLeads();
+export async function getAllLeads(requestTypeFilter?: string[]): Promise<Lead[]> {
+  return getLeads(undefined, requestTypeFilter);
 }
 
-export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
+export async function getLeads(
+  statusFilter?: LeadStatus,
+  requestTypeFilter?: string[]
+): Promise<Lead[]> {
   let allRecords: any[] = [];
   let offset = '';
 
   try {
     do {
       let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
+      
       if (statusFilter) {
         filterByFormula = `AND(${filterByFormula}, {StatusLavorazione} = '${statusFilter}')`;
+      }
+      
+      // Filtro per TipoRichiesta se specificato
+      if (requestTypeFilter && requestTypeFilter.length > 0) {
+        // Crea una formula OR per i tipi di richiesta
+        const requestTypeConditions = requestTypeFilter
+          .map(type => `{TipoRichiesta} = '${type}'`)
+          .join(', ');
+        filterByFormula = `AND(${filterByFormula}, OR(${requestTypeConditions}))`;
       }
       
       const url = new URL(airtableApiUrl);

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getUserRole, getAllowedRequestTypes } from '@/lib/user-roles';
 
 const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || 'https://hook.eu2.make.com/rwq2wb22gxx3guhbb36v3spa65ido155';
 const MAKE_API_KEY = process.env.MAKE_API_KEY;
@@ -16,10 +17,16 @@ export async function POST(request: Request) {
     const body = await request.json();
     const userEmail = body.userEmail || null;
     
+    // Ottieni il ruolo e i tipi di richiesta permessi
+    const userRole = getUserRole(userEmail);
+    const allowedRequestTypes = getAllowedRequestTypes(userEmail);
+    
     // Prepara il payload da inviare al webhook
     const payload = {
       timestamp: new Date().toISOString(),
       userEmail: userEmail,
+      userRole: userRole,
+      allowedRequestTypes: allowedRequestTypes, // null per admin (tutto), array per altri ruoli
     };
 
     const response = await fetch(MAKE_WEBHOOK_URL, {
