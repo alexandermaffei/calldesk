@@ -47,7 +47,7 @@ export default function AIAgentButton() {
     if (!response) return null;
 
     const lines = response.split('\n').filter(line => line.trim());
-    const formatted: JSX.Element[] = [];
+    const formatted: React.ReactElement[] = [];
     
     let currentSection: string[] = [];
     let sectionType: 'header' | 'description' | 'actions' | null = null;
