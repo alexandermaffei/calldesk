@@ -13,7 +13,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { StatusUpdater } from '@/components/status-updater';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OperatorNotesEditor } from '@/components/operator-notes-editor';
-import { useAuth } from '@/contexts/auth-context';
 
 export default function LeadDetailPage({
   params,
@@ -24,19 +23,13 @@ export default function LeadDetailPage({
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { user } = useAuth();
 
   const fetchLead = async (id: string) => {
     setLoading(true);
     try {
-      const headers: HeadersInit = {};
-      if (user?.email) {
-        headers['x-user-email'] = user.email;
-      }
-
-      const response = await fetch(`/api/leads/${id}`, { headers });
+      const response = await fetch(`/api/leads/${id}`);
       if (!response.ok) {
-        if (response.status === 404 || response.status === 403) {
+        if (response.status === 404) {
           notFound();
           return;
         }

@@ -6,7 +6,7 @@ const USER_ROLES: Record<string, UserRole> = {
   'alex.maffei@gruppomaffei.com': 'admin',
   'vincenzo.sardone@gruppomaffei.com': 'officina',
   'anna.montineri@gruppomaffei.com': 'sales',
-  'savino.bartolomeo@gruppomaffei.com': 'admin', // Default a admin se non specificato
+  'savino.bartolomeo@gruppomaffei.com': 'sales',
 };
 
 /**

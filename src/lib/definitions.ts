@@ -18,23 +18,5 @@ export type Lead = {
   requestDate: string; // Data
   createdAt: string; // Created (Airtable metadata)
   agent: string; // Agent
-  requestType?: RequestType; // TipoRichiesta (SERVICE, PARTS, SALES)
-  // Nuovi campi
-  intestazione?: string; // Intestazione
-  kilometraggio?: string; // Kilometraggio
-  veicoloSostitutivo?: string; // VeicoloSostitutivo
-  altreSegnalazioni?: string; // AltreSegnalazioni
-  feedback?: string; // Feedback
-  informazioniAuto?: string; // InformazioniAuto
-  autoAlternativa?: string; // AutoAlternativa
-  permuta?: string; // Permuta
-  ragioneSociale?: string; // RagioneSociale
-  pagamento?: string; // Pagamento
-  venditore?: string; // Venditore
-  cambio?: string; // Cambio
-  alimentazione?: string; // Alimentazione
-  sitoAnnuncio?: string; // SitoAnnuncio
-  provenienza?: string; // Provenienza
-  pezzoDiRicambio?: string; // PezzoDiRicambio
-  tipoRichiestaSales?: string; // TipoRichiestaSales
+  requestType?: RequestType; // TipoRichiesta (SALES, PARTS, SERVICE)
 };

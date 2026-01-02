@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getLeadById } from '@/lib/data';
-import { getAllowedRequestTypes } from '@/lib/user-roles';
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -15,24 +14,6 @@ export async function GET(
         { error: 'Lead non trovato' },
         { status: 404 }
       );
-    }
-
-    // Verifica i permessi dell'utente
-    const userEmail = request.headers.get('x-user-email') || 
-                     request.nextUrl.searchParams.get('email');
-    
-    if (userEmail) {
-      const allowedRequestTypes = getAllowedRequestTypes(userEmail);
-      
-      // Se l'utente non è admin e la lead ha un TipoRichiesta, verifica i permessi
-      if (allowedRequestTypes !== null && lead.requestType) {
-        if (!allowedRequestTypes.includes(lead.requestType)) {
-          return NextResponse.json(
-            { error: 'Accesso negato a questa lead' },
-            { status: 403 }
-          );
-        }
-      }
     }
     
     return NextResponse.json(lead);
