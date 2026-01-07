@@ -45,8 +45,25 @@ const mapAirtableRecordToLead = (record: any): Lead => {
     location: fields.Sede || '',
     requestDate: fields.Data ? formatISO(new Date(fields.Data)) : '',
     createdAt: fields.Created ? formatISO(new Date(fields.Created)) : new Date().toISOString(),
+    lastModified: fields['Last Modified'] ? formatISO(new Date(fields['Last Modified'])) : undefined,
     agent: fields.Agent || 'Non Assegnato',
     requestType: fields.TipoRichiesta || undefined, // Mappa TipoRichiesta da Airtable
+    // Sales-specific fields
+    informazioniAuto: fields.InformazioniAuto || undefined,
+    permuta: fields.Permuta || undefined,
+    ragioneSociale: fields.RagioneSociale || undefined,
+    pagamento: fields.Pagamento || undefined,
+    venditore: fields.Venditore || undefined,
+    cambio: fields.Cambio || undefined,
+    alimentazione: fields.Alimentazione || undefined,
+    sitoAnnuncio: fields.SitoAnnuncio || undefined,
+    provenienza: fields.Provenienza || undefined,
+    pezzoDiRicambio: fields.PezzoDiRicambio || undefined,
+    error: fields.Error || undefined,
+    bodyPreview: fields.BodyPreview || undefined,
+    message: fields.Message || undefined,
+    tipoRichiestaSales: fields.TipoRichiestaSales || undefined,
+    marca: fields.Marca ? String(fields.Marca).replace(/^"|"$/g, '') : undefined, // Rimuovi virgolette dalla formula
   };
 };
 

@@ -17,6 +17,23 @@ export type Lead = {
   location: string; // Sede
   requestDate: string; // Data
   createdAt: string; // Created (Airtable metadata)
+  lastModified?: string; // Last Modified (Airtable metadata)
   agent: string; // Agent
   requestType?: RequestType; // TipoRichiesta (SALES, PARTS, SERVICE)
+  // Sales-specific fields
+  informazioniAuto?: string; // InformazioniAuto
+  permuta?: string; // Permuta
+  ragioneSociale?: string; // RagioneSociale
+  pagamento?: string; // Pagamento
+  venditore?: string; // Venditore
+  cambio?: string; // Cambio
+  alimentazione?: string; // Alimentazione
+  sitoAnnuncio?: string; // SitoAnnuncio
+  provenienza?: string; // Provenienza
+  pezzoDiRicambio?: string; // PezzoDiRicambio
+  error?: string; // Error
+  bodyPreview?: string; // BodyPreview
+  message?: string; // Message
+  tipoRichiestaSales?: string; // TipoRichiestaSales
+  marca?: string; // Marca (formula)
 };

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { formatInTimeZone } from 'date-fns-tz';
-import { MoreHorizontal, Search, ListFilter } from 'lucide-react';
+import { MoreHorizontal, Search } from 'lucide-react';
 import type { Lead, LeadStatus } from '@/lib/definitions';
 import {
   Table,
@@ -44,20 +44,77 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
   const isSales = userRole === 'sales';
 
   const filteredLeads = React.useMemo(() => {
+    if (!searchTerm.trim()) {
+      return leads.filter((lead) =>
+        statusFilters.length === 0 || statusFilters.includes(lead.status)
+      );
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim();
+
     return leads.filter((lead) => {
-      const searchMatch =
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.phone.includes(searchTerm) ||
-        lead.vehicleOfInterest.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (lead.plate && lead.plate.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        lead.location.toLowerCase().includes(searchTerm.toLowerCase());
+      // Campi sempre visibili per tutti
+      const commonFields = [
+        lead.name?.toLowerCase() || '',
+        lead.phone || '',
+        lead.requestType?.toLowerCase() || '',
+        lead.status?.toLowerCase() || '',
+        lead.notes?.toLowerCase() || '',
+        lead.plate?.toLowerCase() || '',
+        lead.contactTime?.toLowerCase() || '',
+        lead.operatorNotes?.toLowerCase() || '',
+        lead.location?.toLowerCase() || '',
+      ];
+
+      // Campi specifici per sales
+      let salesFields: string[] = [];
+      if (isSales || userRole === 'admin') {
+        salesFields = [
+          lead.informazioniAuto?.toLowerCase() || '',
+        ];
+      }
+
+      // Campi specifici per services/officina
+      let serviceFields: string[] = [];
+      if ((userRole === 'officina' || userRole === 'admin') && !isSales) {
+        serviceFields = [
+          lead.interventionType?.toLowerCase() || '',
+          lead.vehicleOfInterest?.toLowerCase() || '',
+        ];
+      }
+
+      // Per admin, cerca anche in tutti i campi aggiuntivi
+      let adminFields: string[] = [];
+      if (userRole === 'admin') {
+        adminFields = [
+          lead.vehicleOfInterest?.toLowerCase() || '',
+          lead.interventionType?.toLowerCase() || '',
+          lead.preferredDate?.toLowerCase() || '',
+          lead.preferredTime?.toLowerCase() || '',
+          lead.permuta?.toLowerCase() || '',
+          lead.ragioneSociale?.toLowerCase() || '',
+          lead.pagamento?.toLowerCase() || '',
+          lead.venditore?.toLowerCase() || '',
+          lead.cambio?.toLowerCase() || '',
+          lead.alimentazione?.toLowerCase() || '',
+          lead.sitoAnnuncio?.toLowerCase() || '',
+          lead.provenienza?.toLowerCase() || '',
+          lead.pezzoDiRicambio?.toLowerCase() || '',
+          lead.tipoRichiestaSales?.toLowerCase() || '',
+          lead.marca?.toLowerCase() || '',
+        ];
+      }
+
+      // Cerca in tutti i campi rilevanti per il ruolo
+      const allFields = [...commonFields, ...salesFields, ...serviceFields, ...adminFields];
+      const searchMatch = allFields.some(field => field.includes(searchLower));
 
       const statusMatch =
         statusFilters.length === 0 || statusFilters.includes(lead.status);
 
       return searchMatch && statusMatch;
     });
-  }, [leads, searchTerm, statusFilters]);
+  }, [leads, searchTerm, statusFilters, isSales, userRole]);
 
   const handleStatusFilterChange = (status: LeadStatus) => {
     setStatusFilters((prev) =>
@@ -120,28 +177,6 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <ListFilter className="size-3.5" />
-                  <span className="hidden sm:inline">Filtra</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filtra per stato</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {STATUS_OPTIONS.map((status) => (
-                  <DropdownMenuCheckboxItem
-                    key={status}
-                    checked={statusFilters.includes(status)}
-                    onSelect={(e) => e.preventDefault()}
-                    onCheckedChange={() => handleStatusFilterChange(status)}
-                  >
-                    {status}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </CardHeader>
@@ -155,6 +190,7 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                 <TableHead>Stato</TableHead>
                 <TableHead>Richiesta</TableHead>
                 <TableHead>Targa</TableHead>
+                {isSales && <TableHead>Informazioni Auto</TableHead>}
                 {!isSales && <TableHead>Tipo Intervento</TableHead>}
                 <TableHead>Ricontatto</TableHead>
                 <TableHead>Note Operatore</TableHead>
@@ -184,6 +220,7 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                   </TableCell>
                   <TableCell className="max-w-[1200px] whitespace-normal break-words">{lead.notes || ''}</TableCell>
                   <TableCell className="whitespace-normal break-words">{lead.plate || ''}</TableCell>
+                  {isSales && <TableCell className="whitespace-normal break-words">{lead.informazioniAuto || ''}</TableCell>}
                   {!isSales && <TableCell className="whitespace-normal break-words">{lead.interventionType || ''}</TableCell>}
                   <TableCell className="whitespace-normal break-words">{lead.contactTime || ''}</TableCell>
                   <TableCell className="max-w-[200px] whitespace-normal break-words">{lead.operatorNotes || ''}</TableCell>

@@ -151,8 +151,8 @@ export default function DashboardContent({ initialView = 'to-manage' }: Dashboar
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <KpiCard title="Lead da gestire" value={leadsToManageCount} icon={<Phone className="size-6" />} />
-        <KpiCard title="Lead gestite" value={leadsManagedCount} icon={<PhoneForwarded className="size-6" />} />
+        <KpiCard title="Lead da gestire" value={leadsToManageCount} icon={<Phone className="size-6" />} valueColor="text-purple-600 dark:text-purple-400" />
+        <KpiCard title="Lead gestite" value={leadsManagedCount} icon={<PhoneForwarded className="size-6" />} valueColor="text-green-600 dark:text-green-400" />
         <KpiCard title="Totale lead ricevute" value={totalLeads} icon={<List className="size-6" />} />
       </div>
 
