@@ -5,8 +5,10 @@ const USER_ROLES: Record<string, UserRole> = {
   'manuel.maffei@gruppomaffei.com': 'admin',
   'alex.maffei@gruppomaffei.com': 'admin',
   'vincenzo.sardone@gruppomaffei.com': 'officina',
+  'servicesdemo@gruppomaffei.com': 'officina',
   'anna.montineri@gruppomaffei.com': 'sales',
   'savino.bartolomeo@gruppomaffei.com': 'sales',
+  'salesdemo@gruppomaffei.com': 'sales',
 };
 
 /**
@@ -39,9 +41,9 @@ export function getAllowedRequestTypes(userEmail: string | null | undefined): st
     case 'officina':
       return ['SERVICE', 'PARTS'];
     case 'sales':
-      return ['SALES'];
+      return ['SALES', 'GENERICA'];
     default:
-      return ['SALES'];
+      return ['SALES', 'GENERICA'];
   }
 }
 

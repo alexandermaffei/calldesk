@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
+import { formatInTimeZone } from 'date-fns-tz';
 import { Car, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, CalendarCheck, Loader2 } from 'lucide-react';
 import type { Lead } from '@/lib/definitions';
 import { Button } from './ui/button';
@@ -145,7 +146,7 @@ export function LeadDetailDialog({ leadId, open, onOpenChange, onStatusChange }:
                   <CardTitle className="font-headline text-2xl tracking-tight">{lead.name}</CardTitle>
                   <CardDescription>
                     Lead creato il{' '}
-                    {format(parseISO(lead.createdAt), "d MMMM yyyy, HH:mm", {
+                    {formatInTimeZone(parseISO(lead.createdAt), 'Europe/Rome', "d MMMM yyyy, HH:mm", {
                       locale: it,
                     })}
                   </CardDescription>

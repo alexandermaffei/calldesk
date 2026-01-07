@@ -1,5 +1,5 @@
 export type LeadStatus = 'Da gestire' | 'Gestita';
-export type RequestType = 'SALES' | 'PARTS' | 'SERVICE';
+export type RequestType = 'SALES' | 'PARTS' | 'SERVICE' | 'GENERICA';
 
 export type Lead = {
   id: string;

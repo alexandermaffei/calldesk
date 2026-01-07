@@ -32,6 +32,11 @@ export default function RequestTypeBadge({ requestType, className }: RequestType
       text: 'text-green-700 dark:text-green-400',
       border: 'border-green-500/50 dark:border-green-500/60',
     },
+    GENERICA: {
+      bg: 'bg-purple-500/20 dark:bg-purple-500/30',
+      text: 'text-purple-700 dark:text-purple-400',
+      border: 'border-purple-500/50 dark:border-purple-500/60',
+    },
   };
 
   const styles = typeStyles[requestType] || {

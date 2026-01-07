@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
+import { formatInTimeZone } from 'date-fns-tz';
 import { MoreHorizontal, Search, ListFilter } from 'lucide-react';
 import type { Lead, LeadStatus } from '@/lib/definitions';
 import {
@@ -187,7 +188,9 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                   <TableCell>{lead.preferredTime}</TableCell>
                   <TableCell>{lead.location}</TableCell>
                   <TableCell>
-                     {format(parseISO(lead.createdAt), 'd MMM yyyy', { locale: it })}
+                     {formatInTimeZone(parseISO(lead.createdAt), 'Europe/Rome', 'd MMM yyyy, HH:mm', { 
+                       locale: it
+                     })}
                   </TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>

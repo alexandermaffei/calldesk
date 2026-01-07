@@ -5,6 +5,7 @@ import { notFound, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
+import { formatInTimeZone } from 'date-fns-tz';
 import { ArrowLeft, Car, Phone, User, NotebookText, Tag, Clock, Calendar, Building, Info, MessageSquareQuote } from 'lucide-react';
 
 import type { Lead } from '@/lib/definitions';
@@ -105,7 +106,7 @@ export default function LeadDetailPage({
             <CardTitle className="font-headline text-2xl tracking-tight">{lead.name}</CardTitle>
             <CardDescription>
               Lead creato il{' '}
-              {format(parseISO(lead.createdAt), "d MMMM yyyy, HH:mm", {
+              {formatInTimeZone(parseISO(lead.createdAt), 'Europe/Rome', "d MMMM yyyy, HH:mm", {
                 locale: it,
               })}
             </CardDescription>
