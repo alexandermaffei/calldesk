@@ -36,7 +36,7 @@ interface DashboardContentProps {
   initialView?: View;
 }
 
-export default function DashboardContent({ initialView = 'all' }: DashboardContentProps) {
+export default function DashboardContent({ initialView = 'to-manage' }: DashboardContentProps) {
   const { user, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState<View>(initialView);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -151,16 +151,13 @@ export default function DashboardContent({ initialView = 'all' }: DashboardConte
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <KpiCard title="Totale lead ricevute" value={totalLeads} icon={<List className="size-6" />} />
         <KpiCard title="Lead da gestire" value={leadsToManageCount} icon={<Phone className="size-6" />} />
         <KpiCard title="Lead gestite" value={leadsManagedCount} icon={<PhoneForwarded className="size-6" />} />
+        <KpiCard title="Totale lead ricevute" value={totalLeads} icon={<List className="size-6" />} />
       </div>
 
       <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as View)}>
         <TabsList>
-          <TabsTrigger value="all" asChild>
-            <Link href="/?view=all">{viewConfig.all.tabLabel}</Link>
-          </TabsTrigger>
           <TabsTrigger value="to-manage" asChild>
             <Link href="/?view=to-manage">
               {viewConfig['to-manage'].tabLabel}
@@ -168,6 +165,9 @@ export default function DashboardContent({ initialView = 'all' }: DashboardConte
           </TabsTrigger>
           <TabsTrigger value="managed" asChild>
             <Link href="/?view=managed">{viewConfig.managed.tabLabel}</Link>
+          </TabsTrigger>
+          <TabsTrigger value="all" asChild>
+            <Link href="/?view=all">{viewConfig.all.tabLabel}</Link>
           </TabsTrigger>
         </TabsList>
       </Tabs>

@@ -9,7 +9,7 @@ export default async function DashboardPage({
   searchParams?: Promise<{ view?: View }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const currentView = resolvedSearchParams?.view || 'all';
+  const currentView = resolvedSearchParams?.view || 'to-manage';
 
   return <DashboardContent initialView={currentView} />;
 }

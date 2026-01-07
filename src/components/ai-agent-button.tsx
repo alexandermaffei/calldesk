@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Bot, Loader2, X, Phone, User, AlertCircle, CheckCircle2, Sparkles } from "lucide-react";
+import { Bot, Loader2, X, Phone, User, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -244,13 +244,8 @@ export default function AIAgentButton() {
             <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center gap-4">
-                  {/* Bot animato con sparkles */}
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-                    </div>
-                    <Bot className="h-12 w-12 text-primary relative z-10 animate-bounce" style={{ animationDuration: '2s' }} />
-                  </div>
+                  {/* Bot animato */}
+                  <Bot className="h-12 w-12 text-primary animate-bounce" style={{ animationDuration: '2s' }} />
                   
                   {/* Testo animato con typing dots */}
                   <div className="flex flex-col items-center gap-2">
