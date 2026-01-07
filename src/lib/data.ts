@@ -1,4 +1,4 @@
-import type { Lead, LeadStatus } from './definitions';
+import type { Lead, LeadStatus, RequestType } from './definitions';
 import { formatISO } from 'date-fns';
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -36,25 +36,25 @@ const mapAirtableRecordToLead = (record: any): Lead => {
     status: fields.StatusLavorazione || 'Da gestire',
     notes: notes,
     operatorNotes: fields.NoteOperatore || '',
-    vehicleOfInterest: fields.MarcaModello || 'N/A',
-    plate: fields.Targa || 'N/A',
-    interventionType: fields.TipoIntervento || 'N/A',
-    contactTime: fields.OrarioRicontatto || 'N/A',
-    preferredDate: fields.DataPreferita || 'N/A',
-    preferredTime: fields.Orario || 'N/A',
-    location: fields.Sede || 'N/A',
-    requestDate: fields.Data ? formatISO(new Date(fields.Data)) : 'N/A',
+    vehicleOfInterest: fields.MarcaModello || '',
+    plate: fields.Targa || '',
+    interventionType: fields.TipoIntervento || '',
+    contactTime: fields.OrarioRicontatto || '',
+    preferredDate: fields.DataPreferita || '',
+    preferredTime: fields.Orario || '',
+    location: fields.Sede || '',
+    requestDate: fields.Data ? formatISO(new Date(fields.Data)) : '',
     createdAt: fields.Created ? formatISO(new Date(fields.Created)) : new Date().toISOString(),
     agent: fields.Agent || 'Non Assegnato',
     requestType: fields.TipoRichiesta || undefined, // Mappa TipoRichiesta da Airtable
   };
 };
 
-export async function getAllLeads(): Promise<Lead[]> {
-  return getLeads();
+export async function getAllLeads(requestTypeFilter?: RequestType[]): Promise<Lead[]> {
+  return getLeads(undefined, requestTypeFilter);
 }
 
-export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
+export async function getLeads(statusFilter?: LeadStatus, requestTypeFilter?: RequestType[]): Promise<Lead[]> {
   let allRecords: any[] = [];
   let offset = '';
 
@@ -63,6 +63,12 @@ export async function getLeads(statusFilter?: LeadStatus): Promise<Lead[]> {
       let filterByFormula = "NOT({Recapito} = '')"; // Filter out records with empty phone number
       if (statusFilter) {
         filterByFormula = `AND(${filterByFormula}, {StatusLavorazione} = '${statusFilter}')`;
+      }
+      if (requestTypeFilter && requestTypeFilter.length > 0) {
+        const requestTypeConditions = requestTypeFilter
+          .map(type => `{TipoRichiesta} = '${type}'`)
+          .join(', ');
+        filterByFormula = `AND(${filterByFormula}, OR(${requestTypeConditions}))`;
       }
       
       const url = new URL(airtableApiUrl);

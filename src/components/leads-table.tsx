@@ -29,6 +29,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusUpdater } from './status-updater';
 import { LeadDetailDialog } from './lead-detail-dialog';
 import RequestTypeBadge from './request-type-badge';
+import { useAuth } from '@/contexts/auth-context';
+import { getUserRole } from '@/lib/user-roles';
 
 const STATUS_OPTIONS: LeadStatus[] = ['Da gestire', 'Gestita'];
 
@@ -37,6 +39,9 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
   const [statusFilters, setStatusFilters] = React.useState<LeadStatus[]>([]);
   const [selectedLeadId, setSelectedLeadId] = React.useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const { user } = useAuth();
+  const userRole = getUserRole(user?.email || null);
+  const isSales = userRole === 'sales';
 
   const filteredLeads = React.useMemo(() => {
     return leads.filter((lead) => {
@@ -149,12 +154,10 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                 <TableHead>Tipo Richiesta</TableHead>
                 <TableHead>Stato</TableHead>
                 <TableHead>Richiesta</TableHead>
-                <TableHead>Veicolo</TableHead>
                 <TableHead>Targa</TableHead>
-                <TableHead>Tipo Intervento</TableHead>
+                {!isSales && <TableHead>Tipo Intervento</TableHead>}
                 <TableHead>Ricontatto</TableHead>
-                <TableHead>Data Pref.</TableHead>
-                <TableHead>Orario Pref.</TableHead>
+                <TableHead>Note Operatore</TableHead>
                 <TableHead>Sede</TableHead>
                 <TableHead>Data Creazione</TableHead>
                 <TableHead className="text-right">Azioni</TableHead>
@@ -167,28 +170,26 @@ export default function LeadsTable({ leads, title }: { leads: Lead[], title: str
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={(e) => handleRowClick(lead.id, e)}
                 >
-                  <TableCell>
-                    <div className="font-medium">{lead.name}</div>
+                  <TableCell className="whitespace-normal break-words">
+                    <div className="font-medium">{lead.name || ''}</div>
                     <div className="text-sm text-muted-foreground">
-                      {lead.phone}
+                      {lead.phone || ''}
                     </div>
                   </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
+                  <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-normal break-words">
                     <RequestTypeBadge requestType={lead.requestType} />
                   </TableCell>
-                   <TableCell onClick={(e) => e.stopPropagation()}>
+                   <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-normal break-words">
                      <StatusUpdater lead={lead} onStatusChange={handleStatusChange} />
                   </TableCell>
-                  <TableCell className="max-w-[250px] truncate">{lead.notes}</TableCell>
-                  <TableCell>{lead.vehicleOfInterest}</TableCell>
-                  <TableCell>{lead.plate}</TableCell>
-                  <TableCell>{lead.interventionType}</TableCell>
-                  <TableCell>{lead.contactTime}</TableCell>
-                  <TableCell>{lead.preferredDate}</TableCell>
-                  <TableCell>{lead.preferredTime}</TableCell>
-                  <TableCell>{lead.location}</TableCell>
-                  <TableCell>
-                     {formatInTimeZone(parseISO(lead.createdAt), 'Europe/Rome', 'd MMM yyyy, HH:mm', { 
+                  <TableCell className="max-w-[1200px] whitespace-normal break-words">{lead.notes || ''}</TableCell>
+                  <TableCell className="whitespace-normal break-words">{lead.plate || ''}</TableCell>
+                  {!isSales && <TableCell className="whitespace-normal break-words">{lead.interventionType || ''}</TableCell>}
+                  <TableCell className="whitespace-normal break-words">{lead.contactTime || ''}</TableCell>
+                  <TableCell className="max-w-[200px] whitespace-normal break-words">{lead.operatorNotes || ''}</TableCell>
+                  <TableCell className="whitespace-normal break-words">{lead.location || ''}</TableCell>
+                  <TableCell className="whitespace-nowrap min-w-[180px]">
+                     {formatInTimeZone(parseISO(lead.createdAt), 'Europe/Rome', 'd MMMM yyyy, HH:mm', { 
                        locale: it
                      })}
                   </TableCell>
